@@ -1,10 +1,10 @@
-import './index.css'
 import {Component} from 'react'
 import {Redirect} from 'react-router-dom'
 import Cookies from 'js-cookie'
+import './index.css'
 
 class Login extends Component {
-  state = {username: '', password: '', errorMsg: ''}
+  state = {username: '', password: '', showErrorMsg: false, errorMsg: ''}
 
   onChangeUsername = event => {
     this.setState({username: event.target.value})
@@ -14,80 +14,104 @@ class Login extends Component {
     this.setState({password: event.target.value})
   }
 
-  onLoginSuccess = jwtToken => {
-    const {history} = this.props
+  loginSuccess = jwtToken => {
     Cookies.set('jwt_token', jwtToken, {expires: 30})
+    const {history} = this.props
     history.replace('/')
   }
 
-  onLoginFailure = errorMsg => {
-    this.setState({errorMsg})
+  loginFailure = errorMsg => {
+    this.setState({showErrorMsg: true, errorMsg})
   }
 
-  onClickSubmitForm = async event => {
+  onSubmitForm = async event => {
     event.preventDefault()
     const {username, password} = this.state
-    const apiUrl = 'https://apis.ccbp.in/login'
     const userDetails = {username, password}
     const options = {
       method: 'POST',
       body: JSON.stringify(userDetails),
     }
-    const response = await fetch(apiUrl, options)
+    const loginUrl = 'https://apis.ccbp.in/login'
+    const response = await fetch(loginUrl, options)
     const data = await response.json()
     if (response.ok) {
-      this.onLoginSuccess(data.jwt_token)
+      this.loginSuccess(data.jwt_token)
     } else {
-      this.onLoginFailure(data.error_msg)
+      this.loginFailure(data.error_msg)
     }
   }
 
+  renderUsernameContainer = () => {
+    const {username} = this.state
+    return (
+      <div className="inputs-container">
+        <label htmlFor="username" className="label">
+          Username*
+        </label>
+        <br />
+        <input
+          type="text"
+          id="username"
+          value={username}
+          className="input-element"
+          placeholder="Username"
+          onChange={this.onChangeUsername}
+        />
+      </div>
+    )
+  }
+
+  renderPasswordContainer = () => {
+    const {password} = this.state
+    return (
+      <div className="inputs-container">
+        <label htmlFor="password" className="label">
+          Password*
+        </label>
+        <br />
+        <input
+          type="password"
+          id="password"
+          value={password}
+          className="input-element"
+          placeholder="Password"
+          onChange={this.onChangePassword}
+        />
+      </div>
+    )
+  }
+
   render() {
-    const {errorMsg} = this.state
-    const token = Cookies.get('jwt_token')
-    if (token !== undefined) {
+    const {showErrorMsg, errorMsg} = this.state
+
+    const jwtToken = Cookies.get('jwt_token')
+    if (jwtToken !== undefined) {
       return <Redirect to="/" />
     }
     return (
-      <div className="login-container">
-        <div className="main-container">
-          <div className="image-container">
+      <div className="login-responsive-container">
+        <div className="login-page-left-side-section">
+          <img
+            src="https://res.cloudinary.com/dovk61e0h/image/upload/v1662988550/Bookhub/Rectangle_1467_wzhge6_ykftzx.png"
+            className="login-page-image"
+            alt="website login"
+          />
+        </div>
+        <div className="login-page-right-side-section">
+          <div className="login-card">
             <img
-              className="login-page-image"
-              alt="website login"
-              src="https://res.cloudinary.com/dgonqoet4/image/upload/v1686887654/loginBook_nvkfia.png"
+              src="https://res.cloudinary.com/dovk61e0h/image/upload/v1662988538/Bookhub/bookhub_logo_hjkrwl.png"
+              className="login-website-logo"
+              alt="login website logo"
             />
-          </div>
-          <div className="form-container">
-            <form className="form" onSubmit={this.onClickSubmitForm}>
-              <img
-                className="logo-login"
-                alt="login website logo"
-                src="https://res.cloudinary.com/dgonqoet4/image/upload/v1686887647/bookhublogo_upkhlx.png"
-              />
-              <div className="input-container">
-                <label htmlFor="username">Username*</label>
-                <input
-                  id="username"
-                  type="text"
-                  className="userInput"
-                  placeholder="EX-bhavya"
-                  onChange={this.onChangeUsername}
-                />
-              </div>
-              <div className="input-container">
-                <label htmlFor="password">Password*</label>
-                <input
-                  id="password"
-                  type="password"
-                  className="userInput"
-                  placeholder="EX-bhavya@2021"
-                  onChange={this.onChangePassword}
-                />
-                <p className="loginError">{errorMsg}</p>
-              </div>
-
-              <button type="submit" className="loginBtn">
+            <form onSubmit={this.onSubmitForm} className="form-container">
+              {this.renderUsernameContainer()}
+              {this.renderPasswordContainer()}
+              {showErrorMsg ? (
+                <p className="error-message">{errorMsg}</p>
+              ) : null}
+              <button type="submit" className="submit-button">
                 Login
               </button>
             </form>
@@ -97,5 +121,4 @@ class Login extends Component {
     )
   }
 }
-
 export default Login

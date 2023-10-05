@@ -1,124 +1,136 @@
-import './index.css'
+import {Component} from 'react'
 import {Link, withRouter} from 'react-router-dom'
-import {useState} from 'react'
-import {GiHamburgerMenu} from 'react-icons/gi'
-import {FiSun} from 'react-icons/fi'
+import {MdMenu} from 'react-icons/md'
 import {AiOutlineClose} from 'react-icons/ai'
-import {BiMoon} from 'react-icons/bi'
+import {FiSun} from 'react-icons/fi'
 import Cookies from 'js-cookie'
-import BookshelvesContext from '../../context/BookshelvesContext'
+import BookHubThemeContext from '../../context/BookThemeContext'
+import './index.css'
 
-const Header = props => {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const onClickLogoutBtn = () => {
-    const {history} = props
+class Header extends Component {
+  state = {isToggle: false}
+
+  onClickCloseIcon = () => {
+    this.setState(prevState => ({
+      isToggle: !prevState.isToggle,
+    }))
+  }
+
+  onClickMenuIcon = () => {
+    this.setState(prevState => ({
+      isToggle: !prevState.isToggle,
+    }))
+  }
+
+  onClickLogout = () => {
     Cookies.remove('jwt_token')
+    const {history} = this.props
     history.replace('/login')
   }
 
-  const {home, bookShelvesList, favorites} = props
-  const activeTab = home ? 'active-tab' : ''
-  const activeBookShelves = bookShelvesList ? 'active-tab' : ''
-  const favTab = favorites ? 'active-tab' : ''
+  render() {
+    const {isToggle} = this.state
+    return (
+      <BookHubThemeContext.Consumer>
+        {value => {
+          const {isDarkTheme, onClickThemeIcon} = value
 
-  return (
-    <BookshelvesContext.Consumer>
-      {value => {
-        const {onClickTheme, themeMode} = value
+          const bgColor = isDarkTheme
+            ? 'header-dark-theme'
+            : 'header-light-theme'
+          const textColor = !isDarkTheme
+            ? 'light-theme-text'
+            : 'dark-theme-text'
 
-        return (
-          <header className={`responsiveNavbar ${themeMode && 'darkTheme'}`}>
-            <nav className={themeMode ? 'm-nav' : 'navbar'}>
-              <Link className="link" to="/">
-                <img
-                  className="home-logo"
-                  alt="website logo"
-                  src="https://res.cloudinary.com/dgonqoet4/image/upload/v1686887647/bookhublogo_upkhlx.png"
-                />
-              </Link>
-              <div className="nav-ul-items">
-                <ul className="nav-links">
-                  <Link className={`link ${activeTab}`} to="/">
-                    <li className="list">Home</li>
+          const onClickThemeButton = () => {
+            onClickThemeIcon()
+          }
+
+          return (
+            <nav className={`navbar ${bgColor}`}>
+              <div className={`header-responsive-navbar ${bgColor}`}>
+                <Link to="/">
+                  <img
+                    src="https://res.cloudinary.com/dovk61e0h/image/upload/v1663608571/Bookhub/Group_7731Website_Logo_o1zltx_zndaus.png"
+                    className="website-logo"
+                    alt="website logo"
+                  />
+                </Link>
+
+                <ul className="nav-items-container">
+                  <Link to="/" className="nav-links">
+                    <li className={`nav-text ${textColor}`}>Home</li>
                   </Link>
-                  <Link className={`link ${activeBookShelves}`} to="/shelf">
-                    <li className="list">Bookshelves</li>
-                  </Link>
-                  <Link to="/myfavorite" className={`link ${favTab}`}>
-                    <li className="list">Myfavorite</li>
+                  <Link to="/shelf" className="nav-links">
+                    <li className={`nav-text ${textColor}`}>Bookshelves</li>
                   </Link>
                   <button
-                    className="themeSwitcher"
                     type="button"
-                    onClick={onClickTheme}
+                    onClick={onClickThemeButton}
+                    className="theme-button"
                   >
-                    {themeMode ? (
-                      <FiSun
-                        className={`theme-icon ${themeMode && 'themeColor'}`}
-                      />
-                    ) : (
-                      <BiMoon className="theme-icon" />
-                    )}
+                    <FiSun className={textColor} size={25} />
                   </button>
+                  <Link to="/login" className="nav-links">
+                    <li>
+                      <button
+                        type="button"
+                        onClick={this.onClickLogout}
+                        className="logout-button"
+                      >
+                        Logout
+                      </button>
+                    </li>
+                  </Link>
                 </ul>
                 <button
-                  className="logout-btn"
                   type="button"
-                  onClick={onClickLogoutBtn}
+                  className="menu-icon"
+                  onClick={this.onClickMenuIcon}
                 >
-                  Logout
+                  <MdMenu className={textColor} size={20} />
                 </button>
               </div>
-              <div className="mobileNav">
-                <div>
+              {isToggle && (
+                <ul className="mobile-nav-items-container">
+                  <Link to="/" className="nav-links">
+                    <li className={`nav-text ${textColor}`}>Home</li>
+                  </Link>
+                  <Link to="/shelf" className="nav-links">
+                    <li className={`nav-text ${textColor}`}>Bookshelves</li>
+                  </Link>
                   <button
-                    className="themeSwitcher"
                     type="button"
-                    onClick={onClickTheme}
+                    onClick={onClickThemeButton}
+                    className="theme-button"
                   >
-                    {themeMode ? (
-                      <FiSun
-                        className={`theme-icon ${themeMode && 'themeColor'}`}
-                      />
-                    ) : (
-                      <BiMoon className="theme-icon" />
-                    )}
+                    <FiSun className={textColor} size={25} />
                   </button>
-                </div>
-                {menuOpen ? (
-                  <AiOutlineClose onClick={() => setMenuOpen(!menuOpen)} />
-                ) : (
-                  <GiHamburgerMenu onClick={() => setMenuOpen(!menuOpen)} />
-                )}
-              </div>
+                  <Link to="/login" className="nav-links">
+                    <li>
+                      <button
+                        type="button"
+                        onClick={this.onClickLogout}
+                        className="logout-button"
+                      >
+                        Logout
+                      </button>
+                    </li>
+                  </Link>
+                  <button
+                    type="button"
+                    className="close-icon"
+                    onClick={this.onClickCloseIcon}
+                  >
+                    <AiOutlineClose className={textColor} size={20} />
+                  </button>
+                </ul>
+              )}
             </nav>
-            {menuOpen && (
-              <div className="mobileNav">
-                <ul className="nav-links">
-                  <Link className={`link ${activeTab}`} to="/">
-                    <li className="list">Home</li>
-                  </Link>
-                  <Link className={`link ${activeBookShelves}`} to="/shelf">
-                    <li className="list">Bookshelves</li>
-                  </Link>
-                  <Link to="/myfavorite" className={`link ${favTab}`}>
-                    <li className="list">Myfavorite</li>
-                  </Link>
-                </ul>
-                <button
-                  className="logout-btn"
-                  type="button"
-                  onClick={onClickLogoutBtn}
-                >
-                  Logout
-                </button>
-              </div>
-            )}
-          </header>
-        )
-      }}
-    </BookshelvesContext.Consumer>
-  )
+          )
+        }}
+      </BookHubThemeContext.Consumer>
+    )
+  }
 }
-
 export default withRouter(Header)

@@ -1,13 +1,14 @@
-import './index.css'
 import {Component} from 'react'
 import Cookies from 'js-cookie'
 import Loader from 'react-loader-spinner'
 import {BsFillStarFill} from 'react-icons/bs'
 import Header from '../Header'
 import Footer from '../Footer'
-import BookshelvesContext from '../../context/BookshelvesContext'
+import BookHobThemeContext from '../../context/BookThemeContext'
 
-const apiStatus = {
+import './index.css'
+
+const apiStatusConstants = {
   initial: 'INITIAL',
   success: 'SUCCESS',
   failure: 'FAILURE',
@@ -15,227 +16,170 @@ const apiStatus = {
 }
 
 class BookDetails extends Component {
-  state = {bookDetailsList: [], bookDetailsApiStatus: apiStatus.initial}
+  state = {bookDetails: {}, apiStatus: apiStatusConstants.initial}
 
   componentDidMount() {
     this.getBookDetails()
   }
 
+  formattedData = data => ({
+    aboutBook: data.about_book,
+    aboutAuthor: data.about_author,
+    authorName: data.author_name,
+    coverPic: data.cover_pic,
+    id: data.id,
+    rating: data.rating,
+    readStatus: data.read_status,
+    title: data.title,
+  })
+
   getBookDetails = async () => {
-    this.setState({bookDetailsApiStatus: apiStatus.inProgress})
-    const token = Cookies.get('jwt_token')
+    this.setState({apiStatus: apiStatusConstants.inProgress})
+    const jwtToken = Cookies.get('jwt_token')
     const {match} = this.props
     const {params} = match
     const {id} = params
-    const apiUrl = `https://apis.ccbp.in/book-hub/books/${id}`
+    const bookId = id
+
+    const apiUrl = `https://apis.ccbp.in/book-hub/books/${bookId}`
     const options = {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${jwtToken}`,
       },
     }
     const response = await fetch(apiUrl, options)
-    const data = await response.json()
     if (response.ok) {
-      const updateState = {
-        id: data.book_details.id,
-        aboutAuthor: data.book_details.about_author,
-        aboutBook: data.book_details.about_book,
-        authorName: data.book_details.author_name,
-        coverPic: data.book_details.cover_pic,
-        rating: data.book_details.rating,
-        readStatus: data.book_details.read_status,
-        title: data.book_details.title,
-      }
+      const fetchedData = await response.json()
+
+      const updatedData = this.formattedData(fetchedData.book_details)
       this.setState({
-        bookDetailsList: updateState,
-        bookDetailsApiStatus: apiStatus.success,
+        bookDetails: updatedData,
+        apiStatus: apiStatusConstants.success,
       })
     } else {
-      this.setState({bookDetailsApiStatus: apiStatus.failure})
+      this.setState({apiStatus: apiStatusConstants.failure})
     }
   }
 
-  onCLickFetchBookDetails = () => {
+  onClickTryAgain = () => {
     this.getBookDetails()
   }
 
-  renderLoaderView = () => (
-    <BookshelvesContext.Consumer>
+  renderBookDetailsView = () => (
+    <BookHobThemeContext.Consumer>
       {value => {
-        const {themeMode} = value
-
+        const {isDarkTheme} = value
+        const bgColor = isDarkTheme ? 'card-dark-theme' : 'light-theme'
+        const textColor = !isDarkTheme ? 'light-theme-text' : 'dark-theme-text'
+        const {bookDetails} = this.state
+        const {
+          authorName,
+          aboutAuthor,
+          aboutBook,
+          title,
+          coverPic,
+          readStatus,
+          rating,
+        } = bookDetails
         return (
-          <div
-            className={`spinner-loader-container ${
-              themeMode && 'spinner-dark'
-            }`}
-            testid="loader"
-          >
-            <Loader type="TailSpin" color="#0284C7" height={50} width={50} />
-          </div>
-        )
-      }}
-    </BookshelvesContext.Consumer>
-  )
-
-  renderBookDetails = () => {
-    const {bookDetailsList} = this.state
-    const {
-      aboutAuthor,
-      aboutBook,
-      authorName,
-      coverPic,
-      rating,
-      readStatus,
-      title,
-    } = bookDetailsList
-
-    return (
-      <BookshelvesContext.Consumer>
-        {value => {
-          const {themeMode, onClickAddToFav, myFav} = value
-
-          const onClickAddToFavData = () => {
-            onClickAddToFav({...bookDetailsList})
-          }
-
-          const isBookInFavorites = myFav.some(
-            book => book.id === bookDetailsList.id,
-          )
-
-          return (
-            <div className={`bookDetailsContainer ${themeMode && 'bgDark'}`}>
-              <div className={`bookDetailsBox ${themeMode && 'boxBgDark'}`}>
-                <div className="imgDetails">
-                  <img className="detailsImage" alt={title} src={coverPic} />
-                  <div className="detailsContainer">
-                    <h1
-                      className={`details-title ${themeMode && 'colorWhite'}`}
-                    >
-                      {title}
-                    </h1>
-                    <p className={`detailsAuthor ${themeMode && 'colorWhite'}`}>
-                      {authorName}
-                    </p>
-                    <p
-                      key="rating"
-                      className={`detailsRating ${themeMode && 'colorWhite'}`}
-                    >
-                      Avg Rating <BsFillStarFill className="star-icon" />
-                      <span
-                        className={`details-rating ${
-                          themeMode && 'colorWhite'
-                        }`}
-                      >
-                        {rating}
-                      </span>
-                    </p>
-                    <p className={`detailsStatus ${themeMode && 'colorWhite'}`}>
-                      Status:
-                      <span className="details-status"> {readStatus}</span>
-                    </p>
-                    {isBookInFavorites ? (
-                      <button
-                        onClick={onClickAddToFavData}
-                        type="button"
-                        className={
-                          isBookInFavorites ? 'disabled' : 'addedFavbtn'
-                        }
-                        disabled={isBookInFavorites}
-                      >
-                        Added To Favorite
-                      </button>
-                    ) : (
-                      <button
-                        onClick={onClickAddToFavData}
-                        type="button"
-                        className="favBtn"
-                      >
-                        Add To Favorite
-                      </button>
-                    )}
-                  </div>
-                </div>
-                <hr />
-                <div>
-                  <h1 className={`aboutHeading ${themeMode && 'colorWhite'}`}>
-                    About Author
-                  </h1>
-                  <p className={`aboutAuthor ${themeMode && 'colorWhite'}`}>
-                    {aboutAuthor}
+          <div className={`book-details-responsive-container ${bgColor}`}>
+            <div className="book-details-top-card">
+              <div className="cover-pic-description">
+                <img src={coverPic} className="cover-pic" alt={title} />
+                <div className="book-description-container">
+                  <h1 className={`title ${textColor}`}>{title}</h1>
+                  <p className={`author-name ${textColor}`}>{authorName}</p>
+                  <p className={`rating ${textColor}`}>
+                    Avg Rating <BsFillStarFill size={12} className="star" />{' '}
+                    {rating}
                   </p>
-                </div>
-                <div className="aboutContainer">
-                  <h1 className={`aboutHeading ${themeMode && 'colorWhite'}`}>
-                    About Book
-                  </h1>
-                  <p className={`aboutBook ${themeMode && 'colorWhite'}`}>
-                    {aboutBook}
+                  <p className={`read-status ${textColor}`}>
+                    Status:{' '}
+                    <span className="read-status-span-text">{readStatus}</span>
                   </p>
                 </div>
               </div>
+              <hr className="separator" />
+              <h1 className={`about-heading ${textColor}`}>About Author</h1>
+              <p className={`description ${textColor}`}>{aboutAuthor}</p>
+              <h1 className={`about-heading ${textColor}`}>About Book</h1>
+              <p className={`description ${textColor}`}>{aboutBook}</p>
             </div>
-          )
-        }}
-      </BookshelvesContext.Consumer>
-    )
-  }
-
-  renderFailureView = () => (
-    <BookshelvesContext.Consumer>
-      {value => {
-        const {themeMode} = value
-
-        return (
-          <div className={`detailsFailureView ${themeMode && 'bgDark'}`}>
-            <img
-              className="detailsFailureImage"
-              alt="failure view"
-              src="https://res.cloudinary.com/dgonqoet4/image/upload/v1686887648/somethingwrong_l7pyto.png"
-            />
-            <p className="detailsFailureHeading">
-              Something went wrong, Please try again.
-            </p>
-            <button
-              type="button"
-              className="failureRetryBtn"
-              onClick={this.onCLickFetchBookDetails}
-            >
-              Try Again
-            </button>
           </div>
         )
       }}
-    </BookshelvesContext.Consumer>
+    </BookHobThemeContext.Consumer>
   )
 
-  renderDetailsBasedOnApiStatus = () => {
-    const {bookDetailsApiStatus} = this.state
+  renderLoader = () => (
+    <div className="loader-container" testid="loader">
+      <Loader type="TailSpin" color="#0284C7" height={50} width={50} />
+    </div>
+  )
 
-    switch (bookDetailsApiStatus) {
-      case apiStatus.success:
-        return <>{this.renderBookDetails()}</>
-      case apiStatus.inProgress:
-        return <>{this.renderLoaderView()}</>
-      case apiStatus.failure:
-        return <>{this.renderFailureView()}</>
+  renderFailureView = () => (
+    <BookHobThemeContext.Consumer>
+      {value => {
+        const {isDarkTheme} = value
+        const textColor = !isDarkTheme ? 'light-theme-text' : 'dark-theme-text'
+        return (
+          <div className="book-details-failure-view-container">
+            <img
+              src="https://res.cloudinary.com/dovk61e0h/image/upload/v1663608572/Bookhub/Group_7522Failure_Image_ykvhlm_gwy5rw.png"
+              className="failure-image"
+              alt="failure view"
+            />
+            <p className={`failure-heading ${textColor}`}>
+              Something went wrong, Please try again.
+            </p>
+            <div>
+              <button
+                type="button"
+                onClick={this.onClickTryAgain}
+                className="try-again-button"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        )
+      }}
+    </BookHobThemeContext.Consumer>
+  )
 
+  renderBookDetailsBasedOnApiStatus = () => {
+    const {apiStatus} = this.state
+    switch (apiStatus) {
+      case apiStatusConstants.success:
+        return this.renderBookDetailsView()
+      case apiStatusConstants.failure:
+        return this.renderFailureView()
+      case apiStatusConstants.inProgress:
+        return this.renderLoader()
       default:
         return null
     }
   }
 
   render() {
-    const {bookDetailsApiStatus} = this.state
     return (
-      <div>
-        <Header />
-        <div>{this.renderDetailsBasedOnApiStatus()}</div>
-        {bookDetailsApiStatus === 'IN_PROGRESS' ? '' : <Footer />}
-      </div>
+      <BookHobThemeContext.Consumer>
+        {value => {
+          const {isDarkTheme} = value
+          const bgColor = isDarkTheme ? 'dark-theme' : 'light-theme'
+          return (
+            <div className={`bookdetails-container ${bgColor}`}>
+              <Header />
+              <div className={`responsive-container ${bgColor}`}>
+                {this.renderBookDetailsBasedOnApiStatus()}
+              </div>
+              <Footer />
+            </div>
+          )
+        }}
+      </BookHobThemeContext.Consumer>
     )
   }
 }
-
 export default BookDetails

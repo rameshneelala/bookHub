@@ -1,235 +1,187 @@
-.bookDetailsContainer {
+.bookdetails-container {
+  background-size: cover;
+}
+.light-theme {
   background-color: #f5f7fa;
-  height: 120vh;
-  background-size: cover;
-  display: flex;
-  padding: 50px 70px;
 }
-
-.detailsImage {
-  width: 200px;
-  height: 220px;
-  border-radius: 14.1309px;
+.card-dark-theme {
+  background-color: #343536;
 }
-
-.bookDetailsBox {
-  width: 1140px;
-  box-shadow: 0px 0px 1px rgba(40, 41, 61, 0.08),
-    0px 1px 2px rgba(96, 97, 112, 0.16);
-  border-radius: 16px;
-  background-color: #fff;
-  padding: 50px;
-  height: 100vh;
-  margin-bottom: 100px;
+.dark-theme {
+  background-color: #181818;
 }
-
-.imgDetails {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 40px;
-  margin-bottom: 30px;
-}
-
-.details-title {
-  font-weight: 600;
-  font-size: 25px;
-  color: #334155;
-  font-family: roboto;
-}
-
-.detailsAuthor {
-  font-weight: 500;
-  font-size: 17px;
-  color: #475569;
-  font-family: roboto;
-}
-
-.detailsRating {
-  font-weight: 500;
-  font-size: 17px;
-  color: #475569;
-  gap: 10px;
-  display: flex;
-  align-items: center;
-}
-
-.details-rating {
-  font-weight: 400;
-  font-size: 17px;
-  color: #334155;
-}
-
-.detailsStatus {
-  font-weight: 500;
-  font-size: 17px;
+.light-theme-text {
   color: #475569;
 }
-
-.details-status {
-  color: #0284c7;
+.dark-theme-text {
+  color: #f9f9f9;
 }
-
-hr {
-  color: #94a3b8;
+@media screen and (max-width: 768px) {
+  .bookdetails-container {
+    min-height: 150vh;
+    background-size: auto;
+    padding: 0px;
+  }
 }
-
-.aboutHeading {
-  font-weight: 600;
-  font-size: 24px;
-  color: #334155;
-  font-family: 'roboto';
-}
-.aboutBook,
-.aboutAuthor {
-  font-weight: 400;
-  font-size: 16px;
-  color: #475569;
-}
-
-.aboutContainer {
-  margin-top: 20px;
-}
-
-.spinner-loader-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-top: 10%;
-  height: 100vh;
-}
-
-.spinner-dark {
-  background-size: cover;
-  background-color: #000;
-}
-
-.detailsFailureView {
+.responsive-container {
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
 }
-
-.detailsFailureHeading {
-  font-weight: 500;
-  font-size: 24px;
-  color: #475569;
-}
-
-.failureRetryBtn {
-  width: 112px;
-  height: 48px;
-  padding: 12px 24px;
+.book-details-responsive-container {
+  height: 80%;
+  width: 80%;
   border-radius: 12px;
-  background-color: #0284c7;
-  color: #fff;
-  border: none;
-  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 50px;
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-bottom: 30px;
+}
+@media screen and (max-width: 768px) {
+  .book-details-responsive-container {
+    width: 90%;
+    height: 90%;
+    background-color: transparent;
+    padding: 0px;
+    margin-right: 30px;
+  }
+}
+.book-details-top-card {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 }
 
-.fixedLength {
-  height: 100vh;
+.cover-pic-description {
+  height: 30%;
+  width: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
-
-.bgDark {
-  background-color: #000;
-}
-
-.colorWhite {
-  color: #fff;
-}
-
-.boxBgDark {
-  background-color: #000;
-  border: 1px solid #fff;
-}
-
-.favBtn {
-  background-color: #0284c7;
-  color: #fff;
-  border-radius: 4px;
-  width: 130px;
-  height: 32px;
-  border: none;
-  cursor: pointer;
-}
-
-button.disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-  background-color: #0284c7;
-  color: #fff;
-  border-radius: 4px;
-  width: 130px;
-  height: 32px;
-  border: none;
-}
-
-button.disabled:hover {
-  background-color: #eee;
-}
-
-.symbol {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 1.2rem;
-  color: red;
-}
-
-@media screen and (max-width: 786px) {
-  .imgDetails {
-    display: flex;
+@media screen and (max-width: 768px) {
+  .cover-pic-description {
+    height: 50%;
+    width: 100%;
     flex-direction: column;
     align-items: center;
   }
-  .aboutAuthor {
-    margin: auto;
-    width: 100%;
-    font-size: 14px;
-  }
-  .aboutBook {
-    font-size: 14px;
-    margin: auto;
-    width: 100%;
-  }
-
-  .aboutHeading {
-    font-size: 16px;
-  }
-  .bookDetailsContainer {
-    padding: 20px 15px;
-    box-shadow: none;
-    border-radius: 0px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100%;
-  }
-  .bookDetailsBox {
-    width: 100%;
-    height: 100%;
+}
+.cover-pic {
+  height: 100%;
+  width: 30%;
+  border-radius: 10px;
+}
+@media screen and (max-width: 768px) {
+  .cover-pic {
+    height: 60%;
+    width: 50%;
     border-radius: 10px;
   }
-  .fixedLength {
-    height: 0px;
-  }
-  .detailsContainer {
-    text-align: center;
-  }
-  .detailsRating {
-    display: flex;
+}
+.book-description-container {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  margin-left: 16px;
+}
+@media screen and (max-width: 768px) {
+  .book-description-container {
+    width: 100%;
+    height: 50%;
+    align-items: center;
     justify-content: center;
-    margin: 0px;
+    margin-left: 0px;
   }
-  .detailsFailureImage {
-    width: 300px;
-  }
-  .detailsFailureHeading {
-    text-align: center;
+}
+.title {
+  font-family: 'Roboto';
+  font-size: 20px;
+  font-weight: 500;
+  text-align: left;
+  margin-bottom: 0px;
+}
+.author-name {
+  font-family: 'Roboto';
+  font-size: 18px;
+  margin-bottom: 0px;
+}
+.rating {
+  font-family: 'Roboto';
+  font-size: 18px;
+  margin-bottom: 0px;
+}
+.star {
+  color: #fbbf24;
+}
+.read-status {
+  font-family: 'Roboto';
+  font-size: 18px;
+}
+.read-status-span-text {
+  font-family: 'Roboto';
+  font-size: 18px;
+  color: #0284c7;
+}
+@media screen and (max-width: 768px) {
+  .title {
     font-size: 16px;
+  }
+  .author-name {
+    font-size: 14px;
+  }
+  .rating {
+    font-size: 14px;
+  }
+  .read-status {
+    font-size: 14px;
+  }
+  .read-status-span-text {
+    font-size: 14px;
+  }
+}
+.separator {
+  width: 100%;
+  height: 0px;
+  left: 214px;
+  top: 523px;
+  border: 1px solid #94a3b8;
+}
+@media screen and (max-width: 768px) {
+  .separator {
+    margin-left: 16px;
+  }
+}
+.about-heading {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 600;
+  font-size: 20px;
+  text-align: left;
+  width: 100%;
+}
+.description {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  margin-bottom: 0px;
+}
+@media screen and (max-width: 768px) {
+  .about-heading {
+    font-size: 18px;
   }
 }
